@@ -9,7 +9,7 @@ from app.servidorCentral.schemas.envio import EnvioCreate, EnvioResponse
 from app.servidorCentral.models.pago import PagoEnvio
 from datetime import datetime
 
-router = APIRouter(prefix="/envio", tags=["Envío"])
+router = APIRouter(prefix="/envio", tags=["Envio"])
 
 def get_db():
     """
@@ -61,7 +61,8 @@ def crear_envio(envio: EnvioCreate, db: Session = Depends(get_db)):
         nodo_origen_id=envio.nodo_origen_id,
         nodo_destino_id=envio.nodo_destino_id,
         estado=envio.estado,
-        fecha_entrega=envio.fecha_entrega
+        fecha_entrega=envio.fecha_entrega,
+        qr_code=envio.qr_code
     )
 
     cuenta.saldo -= COSTO_ENVIO
@@ -138,6 +139,7 @@ def marcar_entregado(qr_code: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="El envío ya fue entregado")
 
     envio.estado = EstadoEnvioEnum.ENTREGADO
+    envio.fecha_entrega = datetime.utcnow()
     db.commit()
     db.refresh(envio)
     return envio

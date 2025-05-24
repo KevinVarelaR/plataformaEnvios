@@ -7,7 +7,7 @@ app = FastAPI(title="Servidor Central - Gestión de Envíos")
 # Registro de routers de la API de PostgreSQL
 app.include_router(cliente.router, prefix="/clientes", tags=["Clientes"])
 app.include_router(pago.router, prefix="/pagos", tags=["Pagos"])
-app.include_router(envio.router, prefix="/envios", tags=["Envíos"])
+app.include_router(envio.router, prefix="/envios", tags=["Envio"])
 app.include_router(nodo.router, prefix="/nodos", tags=["Nodos"])
 
 # Registro de routers de la API de MongoDB

@@ -1,10 +1,12 @@
---extensión para QR
+-- Extensión para generación de UUIDs (usada en códigos QR)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Modifica la columna qr_code de envios para usar UUID y asignar un valor por defecto generado automáticamente
 ALTER TABLE envios
   ALTER COLUMN qr_code TYPE UUID USING qr_code::UUID,
   ALTER COLUMN qr_code SET DEFAULT uuid_generate_v4();
 
---para acotar los estados de envio se hace un ENUM
+-- ENUM para restringir los posibles estados de un envío
 CREATE TYPE estado_envio AS ENUM (
   'CREADO',
   'EN_TRANSITO',
@@ -79,12 +81,10 @@ CREATE TABLE pagos_envio (
   updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
-
+-- Elimina el valor por defecto de qr_code y la extensión si ya no se requiere
 ALTER TABLE envios
   ALTER COLUMN qr_code DROP DEFAULT;
 DROP EXTENSION IF EXISTS "uuid-ossp";
-
 
 --FUNCIONES Y TRIGGER PARA AUDITORIA:
 
@@ -97,7 +97,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 7) Asociar triggers de auditoría
+-- 7) Triggers para actualizar updated_at automáticamente en cada tabla relevante
 CREATE TRIGGER trg_nodos_updated_at
   BEFORE UPDATE ON nodos_locales
   FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
@@ -118,7 +118,7 @@ CREATE TRIGGER trg_pagos_updated_at
   BEFORE UPDATE ON pagos_envio
   FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 
--- 8 Trigger para ajustar saldo tras cada pago
+-- 8 Trigger para ajustar el saldo de la cuenta tras cada pago registrado
 CREATE OR REPLACE FUNCTION trg_update_saldo_after_pago()
 RETURNS TRIGGER AS $$
 BEGIN

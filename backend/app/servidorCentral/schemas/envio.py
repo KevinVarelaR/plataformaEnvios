@@ -47,6 +47,7 @@ class EnvioCreate(BaseModel):
     nodo_destino_id: int
     estado: Optional[EstadoEnvio] = EstadoEnvio.CREADO
     fecha_entrega: Optional[datetime] = None
+    qr_code: Optional[UUID4] = None  # <-- Agrega esta línea
 
 
 class EnvioResponse(EnvioBase):
