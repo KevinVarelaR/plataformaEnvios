@@ -18,3 +18,18 @@ MANUAL DE INSTALACIÓN
 
 	cd backend
 	uvicorn app.main:app --reload
+
+
+------Para WebApp del Operador------
+
+1. Ingresar a la carpeta
+
+	cd webapp-operador
+	npm run dev
+
+------Para PWA del Cliente------
+
+1. Ingresar a la carpeta
+
+	cd pwa-cliente
+	npm start
