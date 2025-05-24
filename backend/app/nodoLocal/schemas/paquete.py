@@ -1,13 +1,8 @@
 from pydantic import BaseModel
+from typing import Optional, Any
 
-class PaqueteBase(BaseModel):
-    descripcion: str
-    idRuta: str  # Asignado a una ruta existente
-    idCliente: str  # ID real del cliente (provisto por central)
-
-class PaqueteCreate(PaqueteBase):
-    pass
-
-class PaqueteOut(PaqueteBase):
-    idPaquete: str
-    id: str
+class PaqueteCreate(BaseModel):
+    codigo: str
+    descripcion: Optional[str] = None
+    ruta_id: Any
+    qr_code: Optional[str] = None

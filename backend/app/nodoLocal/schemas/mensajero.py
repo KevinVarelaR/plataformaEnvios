@@ -1,12 +1,5 @@
+# nodo_local/schemas/mensajero.py
 from pydantic import BaseModel
 
-class MensajeroBase(BaseModel):
+class MensajeroCreate(BaseModel):
     nombre: str
-    telefono: str
-
-class MensajeroCreate(MensajeroBase):
-    pass
-
-class MensajeroOut(MensajeroBase):
-    idMensajero: str
-    id: str

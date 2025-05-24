@@ -1,24 +1,17 @@
 from fastapi import FastAPI
-from app.nodoCentral.routers import clientes, envios, sincronizacion, nodos, pagos
-from app.nodoLocal.routers import paquetes, rutas, vehiculos, entregas, mensajeros, registrarNodo, sincronizacion
+from app.servidorCentral.routers import cliente, pago, envio, nodo
+from app.nodoLocal.routers import mensajeros, entregas, paquetes, rutas, vehiculos
 
+app = FastAPI(title="Servidor Central - Gestión de Envíos")
 
-app = FastAPI(title="Plataforma Distribuida de Envíos")
+# Registro de routers
+app.include_router(cliente.router, prefix="/clientes", tags=["Clientes"])
+app.include_router(pago.router, prefix="/pagos", tags=["Pagos"])
+app.include_router(envio.router, prefix="/envios", tags=["Envíos"])
+app.include_router(nodo.router, prefix="/nodos", tags=["Nodos"])
 
-app.include_router(clientes.router)
-app.include_router(envios.router)
-app.include_router(sincronizacion.router)
-app.include_router(nodos.router)
-app.include_router(pagos.router)
-
-app.include_router(paquetes.router)
-app.include_router(rutas.router)
-app.include_router(vehiculos.router)
-app.include_router(entregas.router)
-app.include_router(mensajeros.router)
-app.include_router(registrarNodo.router)
-app.include_router(sincronizacion.router, prefix="/nodo-local/sincronizacion", tags=["Sincronización Nodo Local"])
-
-@app.get("/")
-def root():
-    return {"mensaje": "API de Envíos activa"}
+app.include_router(mensajeros.router, prefix="/mensajeros", tags=["Mensajeros"])
+app.include_router(entregas.router, prefix="/entregas", tags=["Entregas"])
+app.include_router(paquetes.router, prefix="/paquetes", tags=["Paquetes"])
+app.include_router(rutas.router, prefix="/rutas", tags=["Rutas"])
+app.include_router(vehiculos.router, prefix="/vehiculos", tags=["Vehículos"])

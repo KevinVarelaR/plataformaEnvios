@@ -1,14 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional, Any
 from datetime import datetime
 
-class EntregaBase(BaseModel):
-    idPaquete: str
-    fechaEntrega: datetime
-    estadoEntrega: str
-    observaciones: str
-
-class EntregaCreate(EntregaBase):
-    pass
-
-class EntregaOut(EntregaBase):
-    id: str
+class EntregaCreate(BaseModel):
+    paquete_id: Any  # ObjectId como str
+    fecha_entrega: Optional[datetime] = None
+    firma: Optional[str] = None
+    observaciones: Optional[str] = None

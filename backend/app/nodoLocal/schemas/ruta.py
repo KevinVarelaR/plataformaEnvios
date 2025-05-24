@@ -1,13 +1,7 @@
 from pydantic import BaseModel
+from typing import Any
 
-class RutaBase(BaseModel):
-    nombreRuta: str
-    vehiculoAsignado: str  # idVehiculo
-    mensajeroAsignado: str  # idMensajero
-
-class RutaCreate(RutaBase):
-    pass
-
-class RutaOut(RutaBase):
-    idRuta: str
-    id: str  
+class RutaCreate(BaseModel):
+    nombre: str
+    vehiculo_id: Any  # ObjectId como str
+    mensajero_id: Any
