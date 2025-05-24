@@ -1,0 +1,20 @@
+MANUAL DE INSTALACIÓN
+
+1. Activar entorno virtual
+
+	python -m venv venv
+	venv\Scripts\activate
+
+2. Instalar dependencias
+
+	pip install -r backend/app/requirements.txt
+
+3. Configurar accesos en los archivos
+	
+	Editar backend/app/servidorCentral/config para la URI de PostgreSQL
+	Editar backend/app/nodoLocal/config.py para la URI de MongoDB
+
+4. Levantar el sistema
+
+	cd backend
+	uvicorn app.main:app --reload

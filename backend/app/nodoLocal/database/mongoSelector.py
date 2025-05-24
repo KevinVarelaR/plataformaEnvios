@@ -1,4 +1,3 @@
-
 from pymongo import MongoClient
 from app.nodoLocal.config import MONGO_URL
 from app.servidorCentral.database.centralPG import SessionLocal

@@ -4,6 +4,19 @@ from app.servidorCentral.database.centralPG import Base
 from datetime import datetime
 
 class Cliente(Base):
+    """
+    Modelo ORM que representa a un cliente en la base de datos.
+
+    Atributos:
+        cliente_id (int): ID único del cliente (clave primaria).
+        nombre (str): Nombre del cliente.
+        cedula (str): Cédula de identidad del cliente (única).
+        telefono (str): Teléfono del cliente.
+        correo (str): Correo electrónico del cliente (único).
+        fecha_alta (datetime): Fecha de alta del cliente.
+        updated_at (datetime): Fecha de la última actualización.
+        cuenta (CuentaCliente): Relación uno a uno con la cuenta del cliente.
+    """
     __tablename__ = "clientes"
 
     cliente_id = Column(Integer, primary_key=True, index=True)
@@ -18,6 +31,15 @@ class Cliente(Base):
     cuenta = relationship("CuentaCliente", back_populates="cliente", uselist=False, cascade="all, delete")
 
 class CuentaCliente(Base):
+    """
+    Modelo ORM que representa la cuenta asociada a un cliente.
+
+    Atributos:
+        cliente_id (int): ID del cliente (clave primaria y foránea).
+        saldo (Decimal): Saldo actual de la cuenta.
+        updated_at (datetime): Fecha de la última actualización del saldo.
+        cliente (Cliente): Relación inversa con el cliente.
+    """
     __tablename__ = "cuentas_clientes"
 
     cliente_id = Column(Integer, ForeignKey("clientes.cliente_id", ondelete="CASCADE"), primary_key=True)

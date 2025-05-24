@@ -12,6 +12,10 @@ from datetime import datetime
 router = APIRouter(prefix="/envio", tags=["Envío"])
 
 def get_db():
+    """
+    Proporciona una sesión de base de datos para cada solicitud.
+    Cierra la sesión automáticamente al finalizar.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -22,6 +26,21 @@ COSTO_ENVIO = 1500
 
 @router.post("/", response_model=EnvioResponse)
 def crear_envio(envio: EnvioCreate, db: Session = Depends(get_db)):
+    """
+    Crea un nuevo envío si el nodo de origen está validado y el cliente tiene fondos suficientes.
+
+    Args:
+        envio (EnvioCreate): Datos del envío a crear.
+        db (Session): Sesión de base de datos proporcionada por dependencia.
+
+    Returns:
+        EnvioResponse: Información del envío creado.
+
+    Raises:
+        HTTPException:  Si el nodo de origen no existe o no está validado,
+                        si los nodos de origen y destino son iguales,
+                        o si el cliente no tiene fondos suficientes.
+    """
     nodo_origen = db.query(NodoLocal).filter(
         NodoLocal.nodo_id == envio.nodo_origen_id,
         NodoLocal.validado == True
@@ -37,7 +56,6 @@ def crear_envio(envio: EnvioCreate, db: Session = Depends(get_db)):
     if not cuenta or cuenta.saldo < COSTO_ENVIO:
         raise HTTPException(status_code=400, detail="Fondos insuficientes")
 
-    # Crear el envío
     nuevo = Envio(
         cliente_id=envio.cliente_id,
         nodo_origen_id=envio.nodo_origen_id,
@@ -50,7 +68,6 @@ def crear_envio(envio: EnvioCreate, db: Session = Depends(get_db)):
     db.add(nuevo)
     db.flush() 
 
-    # Crear el pago relacionado con ese envío
     nuevo_pago = PagoEnvio(
         envio_id=nuevo.envio_id,
         cliente_id=envio.cliente_id,
@@ -67,10 +84,32 @@ def crear_envio(envio: EnvioCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=list[EnvioResponse])
 def listar_envios(db: Session = Depends(get_db)):
+    """
+    Lista todos los envíos registrados en el sistema.
+
+    Args:
+        db (Session): Sesión de base de datos proporcionada por dependencia.
+
+    Returns:
+        list[EnvioResponse]: Lista de envíos registrados.
+    """
     return db.query(Envio).all()
 
 @router.get("/{envio_id}", response_model=EnvioResponse)
 def obtener_envio(envio_id: int, db: Session = Depends(get_db)):
+    """
+    Obtiene la información de un envío específico por su ID.
+
+    Args:
+        envio_id (int): ID del envío a consultar.
+        db (Session): Sesión de base de datos proporcionada por dependencia.
+
+    Returns:
+        EnvioResponse: Información del envío encontrado.
+
+    Raises:
+        HTTPException: Si el envío no existe.
+    """
     envio = db.query(Envio).filter(Envio.envio_id == envio_id).first()
     if not envio:
         raise HTTPException(status_code=404, detail="Envío no encontrado")
@@ -78,6 +117,19 @@ def obtener_envio(envio_id: int, db: Session = Depends(get_db)):
 
 @router.put("/qr/{qr_code}/entregar", response_model=EnvioResponse)
 def marcar_entregado(qr_code: UUID, db: Session = Depends(get_db)):
+    """
+    Marca un envío como entregado usando el código QR.
+
+    Args:
+        qr_code (UUID): Código QR asociado al envío.
+        db (Session): Sesión de base de datos proporcionada por dependencia.
+
+    Returns:
+        EnvioResponse: Información del envío actualizado.
+
+    Raises:
+        HTTPException: Si el envío no existe o ya fue entregado.
+    """
     envio = db.query(Envio).filter(Envio.qr_code == qr_code).first()
     if not envio:
         raise HTTPException(status_code=404, detail="Envío no encontrado")

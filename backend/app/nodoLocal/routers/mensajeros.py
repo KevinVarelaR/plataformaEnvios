@@ -1,4 +1,3 @@
-# nodo_local/routers/mensajeros.py
 from fastapi import APIRouter, HTTPException
 from app.nodoLocal.schemas.mensajero import MensajeroCreate
 from app.nodoLocal.database.mongoSelector import get_mongo_db_por_nodo
